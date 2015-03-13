@@ -6,7 +6,8 @@ from .query_string import QueryString
 from .domain_levels import DOMAIN_LEVEL_SECOND
 from .six import text_type, u
 
-class URLObject(text_type):
+
+class BaseURLObject(text_type):
 
     """
     A URL.
@@ -32,9 +33,6 @@ class URLObject(text_type):
     and path also have a variety of methods for doing more fine-grained
     inspection and manipulation.
     """
-
-    def __repr__(self):
-        return u('URLObject(%r)') % (text_type(self),)
 
     @classmethod
     def from_iri(cls, iri):
@@ -84,12 +82,10 @@ class URLObject(text_type):
 
     def with_scheme(self, scheme):
         """
-        Add or replace this URL's :attr:`.scheme`.
+        Replace this URL's :attr:`.scheme`.
 
-        >>> print(URLObject("http://www.google.com").with_scheme("ftp"))
+        >>> print(URLObject("http://www.google.com").with_scheme("ftp"))  # doctest: +IGNORE_UNICODE
         ftp://www.google.com
-        >>> print(URLObject("//www.google.com").with_scheme("https"))
-        https://www.google.com
         """
         return self.__replace(scheme=scheme)
 
@@ -229,9 +225,9 @@ class URLObject(text_type):
         """
         The username and password of this URL as a 2-tuple.
 
-        >>> URLObject("http://user:password@www.google.com").auth
+        >>> URLObject("http://user:password@www.google.com").auth  # doctest: +IGNORE_UNICODE
         ('user', 'password')
-        >>> URLObject("http://user@www.google.com").auth
+        >>> URLObject("http://user@www.google.com").auth  # doctest: +IGNORE_UNICODE
         ('user', None)
         >>> URLObject("http://www.google.com").auth
         (None, None)
@@ -402,7 +398,7 @@ class URLObject(text_type):
         This attribute is read-only. Changes you make to the list will not
         propagate back to the URL.
 
-        >>> URLObject("http://www.google.com?a=b&c=d").query_list
+        >>> URLObject("http://www.google.com?a=b&c=d").query_list  # doctest: +IGNORE_UNICODE
         [('a', 'b'), ('c', 'd')]
         """
         return self.query.list
@@ -415,10 +411,10 @@ class URLObject(text_type):
         Each name will have only its last value associated with it. For all the
         values for a given key, see :attr:`.query_multi_dict`.
 
-        >>> dictsort(URLObject("http://www.google.com?a=b&c=d").query_dict)
-        {'a': 'b', 'c': 'd'}
-        >>> dictsort(URLObject("http://www.google.com?a=b&a=c").query_dict)
-        {'a': 'c'}
+        >>> URLObject("http://www.google.com?a=b&c=d").query_dict == {'a': 'b', 'c': 'd'}
+        True
+        >>> URLObject("http://www.google.com?a=b&a=c").query_dict == {'a': 'c'}
+        True
         """
         return self.query.dict
 
@@ -430,10 +426,10 @@ class URLObject(text_type):
         All values associated with a given name will be represented, in order,
         in that name's list.
 
-        >>> dictsort(URLObject("http://www.google.com?a=b&c=d").query_multi_dict)
-        {'a': ['b'], 'c': ['d']}
-        >>> dictsort(URLObject("http://www.google.com?a=b&a=c").query_multi_dict)
-        {'a': ['b', 'c']}
+        >>> URLObject("http://www.google.com?a=b&c=d").query_multi_dict == {'a': ['b'], 'c': ['d']}
+        True
+        >>> URLObject("http://www.google.com?a=b&a=c").query_multi_dict == {'a': ['b', 'c']}
+        True
         """
         return self.query.multi_dict
 
@@ -538,7 +534,7 @@ class URLObject(text_type):
         """
         All domains of this URL.
 
-        >>> print(URLObject("http://www.example.code.google.com").domains)
+        >>> print(URLObject("http://www.example.code.google.com").domains)  # doctest: +IGNORE_UNICODE
         ['www', 'example', 'code', 'google', 'com']
         """
         return self.netloc.domains
@@ -605,7 +601,7 @@ class URLObject(text_type):
         """
         # Relative URL resolution involves cascading through the properties
         # from left to right, replacing
-        other = type(self)(other)
+        other = _RelatedURLObject(other)
         if other.scheme:
             return other
         elif other.netloc:
@@ -625,5 +621,34 @@ class URLObject(text_type):
 
     def __replace(self, **replace):
         """Replace a field in the ``urlparse.SplitResult`` for this URL."""
-        return type(self)(urlparse.urlunsplit(
-            urlparse.urlsplit(self)._replace(**replace)))
+        return type(self)(urlparse.urlunsplit(urlparse.urlsplit(self)._replace(**replace)))
+
+
+class URLObject(BaseURLObject):
+    class URLIsEmpty(ValueError):
+        pass
+
+    class SchemeDoesNotExist(ValueError):
+        pass
+
+    class HostnameDoesNotExist(ValueError):
+        pass
+
+    def __repr__(self):
+        return u('URLObject(%r)') % (text_type(self),)
+
+    def __new__(cls, *args, **kwargs):
+        obj = super(URLObject, cls).__new__(cls, *args, **kwargs)
+        if not obj:
+            raise obj.URLIsEmpty('URL is empty.')
+        if not obj.scheme:
+            raise obj.SchemeDoesNotExist('URL must contain a scheme.')
+        if not obj.hostname or len(obj.domains) < 2:
+            raise obj.HostnameDoesNotExist('URL must contain a hostname, which '
+                                           'encapsulates at least: 1 top-level domain and 1 second-level domain.')
+        return obj
+
+
+class _RelatedURLObject(BaseURLObject):
+    def __repr__(self):
+        return u('_RelatedURLObject(%r)') % (text_type(self),)

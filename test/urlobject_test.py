@@ -82,7 +82,6 @@ class URLObjectRelativeTest(unittest.TestCase):
         assert self.url.relative('#bar') == 'https://github.com/zacharyvoase/urlobject?spam=eggs#bar'
 
 
-
 class URLObjectPropertyTest(unittest.TestCase):
 
     def setUp(self):
@@ -363,8 +362,22 @@ class IRITest(unittest.TestCase):
         If an IRI already has some quoted characters, they will be maintained as is.
         """
         assert (URLObject.from_iri(u('https://example.com/foo%20b\xe5r/')) ==
-            'https://example.com/foo%20b%C3%A5r/')
+                'https://example.com/foo%20b%C3%A5r/')
 
     def test_quote_other_special_characters(self):
         assert (URLObject.from_iri(u('https://example.com/foo bar/')) ==
-            'https://example.com/foo%20bar/')
+                'https://example.com/foo%20bar/')
+
+
+class URLObjectIntegrityCheckingTestCase(unittest.TestCase):
+    def test_self_existing_checking(self):
+        self.assertRaises(URLObject.URLIsEmpty, lambda: URLObject(''))
+
+    def test_scheme_existing_checking(self):
+        self.assertRaises(URLObject.SchemeDoesNotExist, lambda: URLObject('example.com'))
+        self.assertRaises(URLObject.SchemeDoesNotExist, lambda: URLObject('//example.com'))
+
+    def test_hostname_existing_checking(self):
+        self.assertRaises(URLObject.HostnameDoesNotExist, lambda: URLObject('http://'))
+        self.assertRaises(URLObject.HostnameDoesNotExist, lambda: URLObject('http://.com'))
+        self.assertRaises(URLObject.HostnameDoesNotExist, lambda: URLObject('http://com'))
