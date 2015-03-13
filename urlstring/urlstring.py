@@ -7,7 +7,7 @@ from .domain_levels import DOMAIN_LEVEL_SECOND
 from .six import text_type, u
 
 
-class BaseURLObject(text_type):
+class BaseURLString(text_type):
 
     """
     A URL.
@@ -601,7 +601,7 @@ class BaseURLObject(text_type):
         """
         # Relative URL resolution involves cascading through the properties
         # from left to right, replacing
-        other = _RelatedURLObject(other)
+        other = _RelatedURLString(other)
         if other.scheme:
             return other
         elif other.netloc:
@@ -624,7 +624,7 @@ class BaseURLObject(text_type):
         return type(self)(urlparse.urlunsplit(urlparse.urlsplit(self)._replace(**replace)))
 
 
-class URLString(BaseURLObject):
+class URLString(BaseURLString):
     class URLIsEmpty(ValueError):
         pass
 
@@ -649,6 +649,6 @@ class URLString(BaseURLObject):
         return obj
 
 
-class _RelatedURLObject(BaseURLObject):
+class _RelatedURLString(BaseURLString):
     def __repr__(self):
-        return u('_RelatedURLObject(%r)') % (text_type(self),)
+        return u('_RelatedURLString(%r)') % (text_type(self),)
