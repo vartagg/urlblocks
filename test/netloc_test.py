@@ -113,6 +113,7 @@ class NetlocTest(unittest.TestCase):
 
     def test_domains(self):
         assert Netloc('www.example1.example.github.com').domains == ['www', 'example1', 'example', 'github', 'com']
+        assert Netloc('www.example1.example.github.com.').domains == ['www', 'example1', 'example', 'github', 'com']
 
     def test_get_domain(self):
         assert Netloc('www.github.com').get_domain() == 'github'
