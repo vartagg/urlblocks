@@ -1,9 +1,9 @@
-URLObject 2
+URLString 2
 ===========
 
 |Build Status|
 
-**URLObject** is a utility class for manipulating URLs. The latest incarnation of
+**URLString** is a utility class for manipulating URLs. The latest incarnation of
 this library builds upon the ideas of its predecessor, but aims for a clearer
 API, focusing on proper method names over operator overrides. It's also being
 developed from the ground up in a test-driven manner, and has full Sphinx
@@ -16,14 +16,14 @@ documentation <api>`.
 Installation
 ------------
 
-Install using ``pip`` from `pypi <http://pypi.python.org/pypi/URLObject>`__.
+Install using ``pip`` from `pypi <http://pypi.python.org/pypi/URLString>`__.
 There are no dependencies, and the package is pure Python, tested on CPythons
 v2.6–3.3. (It probably works on v2.5 as well, but Travis CI no longer supports
 testing on v2.5.)
 
 .. code:: bash
 
-    pip install URLObject
+    pip install URLString
 
 Contents
 --------

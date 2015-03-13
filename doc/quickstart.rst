@@ -7,14 +7,14 @@ Quickstart
 
 ::
 
-    >>> from urlobject import URLObject
+    >>> from urlobject import URLString
 
-Create a URLObject with a string representing a URL.
-:class:`~urlobject.URLObject` is a regular subclass of ``unicode`` (or ``str``
+Create a URLString with a string representing a URL.
+:class:`~urlobject.URLString` is a regular subclass of ``unicode`` (or ``str``
 if you're using Python 3), it just has several properties and methods which
 make it easier to manipulate URLs. All the basic slots from urlsplit are there:
 
-    >>> url = URLObject("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
+    >>> url = URLString("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
     >>> print(url)
     https://github.com/zacharyvoase/urlobject?spam=eggs#foo
     >>> print(url.scheme)
@@ -37,7 +37,7 @@ make it easier to manipulate URLs. All the basic slots from urlsplit are there:
     foo
 
 You can replace any of these slots using a ``with_*()`` method. Remember that,
-because ``unicode`` (and therefore :class:`~urlobject.URLObject`) is immutable,
+because ``unicode`` (and therefore :class:`~urlobject.URLString`) is immutable,
 these methods all return new URLs:
 
     >>> print(url.with_scheme('http'))
@@ -64,8 +64,8 @@ For the query and fragment, ``without_`` methods also exist:
 Relative URL Resolution
 -----------------------
 
-You can resolve relative URLs against a URLObject using
-:meth:`~urlobject.URLObject.relative`:
+You can resolve relative URLs against a URLString using
+:meth:`~urlobject.URLString.relative`:
 
     >>> print(url.relative('another-project'))
     https://github.com/zacharyvoase/another-project
@@ -94,7 +94,7 @@ And you can specify as much or as little of the new URL as you like:
 Path
 ----
 
-The :attr:`~urlobject.URLObject.path` property is an instance of ``URLPath``,
+The :attr:`~urlobject.URLString.path` property is an instance of ``URLPath``,
 which has several methods and properties for manipulating the path string:
 
     >>> print(url.path)
@@ -123,7 +123,7 @@ Some of these are aliased on the URL itself:
 Query string
 ------------
 
-The :attr:`~urlobject.URLObject.query` property is an instance of
+The :attr:`~urlobject.URLString.query` property is an instance of
 ``QueryString``, so you can access sub-attributes of that with richer
 representations of the query string:
 
@@ -160,7 +160,7 @@ returning a new query string:
     >>> print(url.query.add_params({'foo': 'bar', 'baz': 'blah'}).del_params(['spam', 'foo']))
     baz=blah
 
-Again, some of these methods are aliased on the :class:`~urlobject.URLObject`
+Again, some of these methods are aliased on the :class:`~urlobject.URLString`
 directly:
 
     >>> print(url.add_query_param('spam', 'ham'))
@@ -175,4 +175,4 @@ Next Steps
 ----------
 
 Check out the :doc:`API documentation <api>` for a detailed description of all
-the properties and methods available on :class:`~urlobject.URLObject`.
+the properties and methods available on :class:`~urlobject.URLString`.

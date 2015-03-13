@@ -13,13 +13,13 @@ class BaseURLObject(text_type):
     A URL.
 
     This class contains properties and methods for accessing and modifying the
-    constituent components of a URL. :class:`URLObject` instances are
+    constituent components of a URL. :class:`URLString` instances are
     immutable, as they derive from the built-in ``unicode``, and therefore all
     methods return *new* objects; you need to consider this when using
-    :class:`URLObject` in your own code.
+    :class:`URLString` in your own code.
 
-    >>> from urlobject import URLObject
-    >>> u = URLObject("http://www.google.com/")
+    >>> from urlstring import URLString
+    >>> u = URLString("http://www.google.com/")
     >>> print(u)
     http://www.google.com/
 
@@ -39,7 +39,7 @@ class BaseURLObject(text_type):
         """
         Create a URL from an IRI, which may have non-ascii text it.
 
-        This is probably how you should construct a URLObject if the input is
+        This is probably how you should construct a URLString if the input is
         from a user, since users tend to type addresses using their native
         character sets.
 
@@ -53,7 +53,7 @@ class BaseURLObject(text_type):
         The % character is *not* quoted, because users often copy/paste
         addresses that are already quoted, and we should not double-quote it.
 
-        >>> print(URLObject.from_iri(u('https://\xe9xample.com/p\xe5th')))
+        >>> print(URLString.from_iri(u('https://\xe9xample.com/p\xe5th')))
         https://xn--xample-9ua.com/p%C3%A5th
         """
         # This code approximates Section 3.1 of RFC 3987, using the option of
@@ -75,7 +75,7 @@ class BaseURLObject(text_type):
         """
         This URL's scheme.
 
-        >>> print(URLObject("http://www.google.com").scheme)
+        >>> print(URLString("http://www.google.com").scheme)
         http
         """
         return urlparse.urlsplit(self).scheme
@@ -84,7 +84,7 @@ class BaseURLObject(text_type):
         """
         Replace this URL's :attr:`.scheme`.
 
-        >>> print(URLObject("http://www.google.com").with_scheme("ftp"))  # doctest: +IGNORE_UNICODE
+        >>> print(URLString("http://www.google.com").with_scheme("ftp"))  # doctest: +IGNORE_UNICODE
         ftp://www.google.com
         """
         return self.__replace(scheme=scheme)
@@ -97,7 +97,7 @@ class BaseURLObject(text_type):
         This value incorporates :attr:`.username`, :attr:`.password`,
         :attr:`.hostname` and :attr:`.port`.
 
-        >>> print(URLObject("http://user:pass@www.google.com").netloc)
+        >>> print(URLString("http://user:pass@www.google.com").netloc)
         user:pass@www.google.com
         """
         return Netloc(urlparse.urlsplit(self).netloc)
@@ -106,7 +106,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.netloc`.
 
-        >>> print(URLObject("http://www.google.com/a/b/c").with_netloc("www.amazon.com"))
+        >>> print(URLString("http://www.google.com/a/b/c").with_netloc("www.amazon.com"))
         http://www.amazon.com/a/b/c
         """
         return self.__replace(netloc=netloc)
@@ -116,9 +116,9 @@ class BaseURLObject(text_type):
         """
         This URL's username, if any.
 
-        >>> print(URLObject("http://user@www.google.com").username)
+        >>> print(URLString("http://user@www.google.com").username)
         user
-        >>> print(URLObject("http://www.google.com").username)
+        >>> print(URLString("http://www.google.com").username)
         None
         """
         return self.netloc.username
@@ -127,7 +127,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.username`.
 
-        >>> print(URLObject("http://user@www.google.com").with_username("user2"))
+        >>> print(URLString("http://user@www.google.com").with_username("user2"))
         http://user2@www.google.com
         """
         return self.with_netloc(self.netloc.with_username(username))
@@ -136,7 +136,7 @@ class BaseURLObject(text_type):
         """
         Remove this URL's :attr:`.username`.
 
-        >>> print(URLObject("http://user@www.google.com/").without_username())
+        >>> print(URLString("http://user@www.google.com/").without_username())
         http://www.google.com/
         """
         return self.with_netloc(self.netloc.without_username())
@@ -146,9 +146,9 @@ class BaseURLObject(text_type):
         """
         This URL's password, if any.
 
-        >>> print(URLObject("http://user:somepassword@www.google.com").password)
+        >>> print(URLString("http://user:somepassword@www.google.com").password)
         somepassword
-        >>> print(URLObject("http://user@www.google.com").password)
+        >>> print(URLString("http://user@www.google.com").password)
         None
         """
         return self.netloc.password
@@ -157,7 +157,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.password`.
 
-        >>> print(URLObject("http://user:somepassword@www.google.com").with_password("passwd"))
+        >>> print(URLString("http://user:somepassword@www.google.com").with_password("passwd"))
         http://user:passwd@www.google.com
         """
         return self.with_netloc(self.netloc.with_password(password))
@@ -166,7 +166,7 @@ class BaseURLObject(text_type):
         """
         Remove this URL's :attr:`.password`.
 
-        >>> print(URLObject("http://user:pwd@www.google.com").without_password())
+        >>> print(URLString("http://user:pwd@www.google.com").without_password())
         http://user@www.google.com
         """
         return self.with_netloc(self.netloc.without_password())
@@ -176,7 +176,7 @@ class BaseURLObject(text_type):
         """
         This URL's hostname.
 
-        >>> print(URLObject("http://www.google.com").hostname)
+        >>> print(URLString("http://www.google.com").hostname)
         www.google.com
         """
         return self.netloc.hostname
@@ -185,7 +185,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.hostname`.
 
-        >>> print(URLObject("http://www.google.com/a/b/c").with_hostname("cdn.amazon.com"))
+        >>> print(URLString("http://www.google.com/a/b/c").with_hostname("cdn.amazon.com"))
         http://cdn.amazon.com/a/b/c
         """
         return self.with_netloc(self.netloc.with_hostname(hostname))
@@ -195,9 +195,9 @@ class BaseURLObject(text_type):
         """
         This URL's port number, or ``None``.
 
-        >>> URLObject("http://www.google.com:8080").port
+        >>> URLString("http://www.google.com:8080").port
         8080
-        >>> print(URLObject("http://www.google.com").port)
+        >>> print(URLString("http://www.google.com").port)
         None
         """
         return self.netloc.port
@@ -206,7 +206,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.port`.
 
-        >>> print(URLObject("http://www.google.com/a/b/c").with_port(8080))
+        >>> print(URLString("http://www.google.com/a/b/c").with_port(8080))
         http://www.google.com:8080/a/b/c
         """
         return self.with_netloc(self.netloc.with_port(port))
@@ -215,7 +215,7 @@ class BaseURLObject(text_type):
         """
         Remove this URL's :attr:`.port`.
 
-        >>> print(URLObject("http://www.google.com:8080/a/b/c").without_port())
+        >>> print(URLString("http://www.google.com:8080/a/b/c").without_port())
         http://www.google.com/a/b/c
         """
         return self.with_netloc(self.netloc.without_port())
@@ -225,11 +225,11 @@ class BaseURLObject(text_type):
         """
         The username and password of this URL as a 2-tuple.
 
-        >>> URLObject("http://user:password@www.google.com").auth  # doctest: +IGNORE_UNICODE
+        >>> URLString("http://user:password@www.google.com").auth  # doctest: +IGNORE_UNICODE
         ('user', 'password')
-        >>> URLObject("http://user@www.google.com").auth  # doctest: +IGNORE_UNICODE
+        >>> URLString("http://user@www.google.com").auth  # doctest: +IGNORE_UNICODE
         ('user', None)
-        >>> URLObject("http://www.google.com").auth
+        >>> URLString("http://www.google.com").auth
         (None, None)
         """
         return self.netloc.auth
@@ -242,9 +242,9 @@ class BaseURLObject(text_type):
         password. With one argument, it adds/replaces the username and removes
         any password.
 
-        >>> print(URLObject("http://user:password@www.google.com").with_auth("otheruser", "otherpassword"))
+        >>> print(URLString("http://user:password@www.google.com").with_auth("otheruser", "otherpassword"))
         http://otheruser:otherpassword@www.google.com
-        >>> print(URLObject("http://www.google.com").with_auth("user"))
+        >>> print(URLString("http://www.google.com").with_auth("user"))
         http://user@www.google.com
         """
         return self.with_netloc(self.netloc.with_auth(*auth))
@@ -253,7 +253,7 @@ class BaseURLObject(text_type):
         """
         Remove any :attr:`.username` and :attr:`.password` on this URL.
 
-        >>> print(URLObject("http://user:password@www.google.com/a/b/c").without_auth())
+        >>> print(URLString("http://user:password@www.google.com/a/b/c").without_auth())
         http://www.google.com/a/b/c
         """
         return self.with_netloc(self.netloc.without_auth())
@@ -271,11 +271,11 @@ class BaseURLObject(text_type):
         For URLs *with* explicit port numbers, this just returns the value of
         :attr:`.port`.
 
-        >>> URLObject("https://www.google.com").default_port
+        >>> URLString("https://www.google.com").default_port
         443
-        >>> URLObject("http://www.google.com").default_port
+        >>> URLString("http://www.google.com").default_port
         80
-        >>> URLObject("http://www.google.com:126").default_port
+        >>> URLString("http://www.google.com:126").default_port
         126
         """
         port = urlparse.urlsplit(self).port
@@ -288,9 +288,9 @@ class BaseURLObject(text_type):
         """
         This URL's path.
 
-        >>> print(URLObject("http://www.google.com/a/b/c").path)
+        >>> print(URLString("http://www.google.com/a/b/c").path)
         /a/b/c
-        >>> print(URLObject("http://www.google.com").path)
+        >>> print(URLString("http://www.google.com").path)
         <BLANKLINE>
         """
         return URLPath(urlparse.urlsplit(self).path)
@@ -299,7 +299,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.path`.
 
-        >>> print(URLObject("http://www.google.com/a/b/c").with_path("c/b/a"))
+        >>> print(URLString("http://www.google.com/a/b/c").with_path("c/b/a"))
         http://www.google.com/c/b/a
         """
         return self.__replace(path=path)
@@ -311,7 +311,7 @@ class BaseURLObject(text_type):
 
         This is just a synonym for ``url.with_path('/')``.
 
-        >>> print(URLObject("http://www.google.com/a/b/c").root)
+        >>> print(URLString("http://www.google.com/a/b/c").root)
         http://www.google.com/
         """
         return self.with_path('/')
@@ -321,9 +321,9 @@ class BaseURLObject(text_type):
         """
         The direct parent node of this URL.
 
-        >>> print(URLObject("http://www.google.com/a/b/c").parent)
+        >>> print(URLString("http://www.google.com/a/b/c").parent)
         http://www.google.com/a/b/
-        >>> print(URLObject("http://www.google.com/a/b/").parent)
+        >>> print(URLString("http://www.google.com/a/b/").parent)
         http://www.google.com/a/
         """
         return self.with_path(self.path.parent)
@@ -337,25 +337,25 @@ class BaseURLObject(text_type):
         things like relative URL resolution (c.f. :meth:`.relative`) and
         server-side routing.
 
-        >>> URLObject("http://www.google.com/a/b/c").is_leaf
+        >>> URLString("http://www.google.com/a/b/c").is_leaf
         True
-        >>> URLObject('http://www.google.com/a/').is_leaf
+        >>> URLString('http://www.google.com/a/').is_leaf
         False
-        >>> URLObject('http://www.google.com').is_leaf
+        >>> URLString('http://www.google.com').is_leaf
         False
         """
         return self.path.is_leaf
 
     def add_path_segment(self, segment):
         """
-        >>> print(URLObject("http://www.google.com").add_path_segment("a"))
+        >>> print(URLString("http://www.google.com").add_path_segment("a"))
         http://www.google.com/a
         """
         return self.with_path(self.path.add_segment(segment))
 
     def add_path(self, partial_path):
         """
-        >>> print(URLObject("http://www.google.com").add_path("a/b/c"))
+        >>> print(URLString("http://www.google.com").add_path("a/b/c"))
         http://www.google.com/a/b/c
         """
         return self.with_path(self.path.add(partial_path))
@@ -365,9 +365,9 @@ class BaseURLObject(text_type):
         """
         This URL's query string.
 
-        >>> print(URLObject("http://www.google.com").query)
+        >>> print(URLString("http://www.google.com").query)
         <BLANKLINE>
-        >>> print(URLObject("http://www.google.com?a=b").query)
+        >>> print(URLString("http://www.google.com?a=b").query)
         a=b
         """
         return QueryString(urlparse.urlsplit(self).query)
@@ -376,7 +376,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.query` string.
 
-        >>> print(URLObject("http://www.google.com").with_query("a=b"))
+        >>> print(URLString("http://www.google.com").with_query("a=b"))
         http://www.google.com?a=b
         """
         return self.__replace(query=query)
@@ -385,7 +385,7 @@ class BaseURLObject(text_type):
         """
         Remove this URL's :attr:`.query` string.
 
-        >>> print(URLObject("http://www.google.com?a=b&c=d").without_query())
+        >>> print(URLString("http://www.google.com?a=b&c=d").without_query())
         http://www.google.com
         """
         return self.__replace(query='')
@@ -398,7 +398,7 @@ class BaseURLObject(text_type):
         This attribute is read-only. Changes you make to the list will not
         propagate back to the URL.
 
-        >>> URLObject("http://www.google.com?a=b&c=d").query_list  # doctest: +IGNORE_UNICODE
+        >>> URLString("http://www.google.com?a=b&c=d").query_list  # doctest: +IGNORE_UNICODE
         [('a', 'b'), ('c', 'd')]
         """
         return self.query.list
@@ -411,9 +411,9 @@ class BaseURLObject(text_type):
         Each name will have only its last value associated with it. For all the
         values for a given key, see :attr:`.query_multi_dict`.
 
-        >>> URLObject("http://www.google.com?a=b&c=d").query_dict == {'a': 'b', 'c': 'd'}
+        >>> URLString("http://www.google.com?a=b&c=d").query_dict == {'a': 'b', 'c': 'd'}
         True
-        >>> URLObject("http://www.google.com?a=b&a=c").query_dict == {'a': 'c'}
+        >>> URLString("http://www.google.com?a=b&a=c").query_dict == {'a': 'c'}
         True
         """
         return self.query.dict
@@ -426,9 +426,9 @@ class BaseURLObject(text_type):
         All values associated with a given name will be represented, in order,
         in that name's list.
 
-        >>> URLObject("http://www.google.com?a=b&c=d").query_multi_dict == {'a': ['b'], 'c': ['d']}
+        >>> URLString("http://www.google.com?a=b&c=d").query_multi_dict == {'a': ['b'], 'c': ['d']}
         True
-        >>> URLObject("http://www.google.com?a=b&a=c").query_multi_dict == {'a': ['b', 'c']}
+        >>> URLString("http://www.google.com?a=b&a=c").query_multi_dict == {'a': ['b', 'c']}
         True
         """
         return self.query.multi_dict
@@ -439,9 +439,9 @@ class BaseURLObject(text_type):
 
         You can ``add`` several query parameters with the same name to a URL.
 
-        >>> print(URLObject("http://www.google.com").add_query_param("a", "b"))
+        >>> print(URLString("http://www.google.com").add_query_param("a", "b"))
         http://www.google.com?a=b
-        >>> print(URLObject("http://www.google.com").add_query_param("a", "b").add_query_param("a", "c"))
+        >>> print(URLString("http://www.google.com").add_query_param("a", "b").add_query_param("a", "c"))
         http://www.google.com?a=b&a=c
         """
         return self.with_query(self.query.add_param(name, value))
@@ -453,9 +453,9 @@ class BaseURLObject(text_type):
         Accepts anything you would normally pass to ``dict()``: iterables of
         name/value pairs, keyword arguments and dictionary objects.
 
-        >>> print(URLObject("http://www.google.com").add_query_params([('a', 'b'), ('c', 'd')]))
+        >>> print(URLString("http://www.google.com").add_query_params([('a', 'b'), ('c', 'd')]))
         http://www.google.com?a=b&c=d
-        >>> print(URLObject("http://www.google.com").add_query_params(a="b"))
+        >>> print(URLString("http://www.google.com").add_query_params(a="b"))
         http://www.google.com?a=b
         """
         return self.with_query(self.query.add_params(*args, **kwargs))
@@ -464,7 +464,7 @@ class BaseURLObject(text_type):
         """
         Set a single query parameter, overriding it if it exists already.
 
-        >>> print(URLObject("http://www.google.com?a=b&c=d").set_query_param("a", "z"))
+        >>> print(URLString("http://www.google.com?a=b&c=d").set_query_param("a", "z"))
         http://www.google.com?c=d&a=z
         """
         return self.with_query(self.query.set_param(name, value))
@@ -476,9 +476,9 @@ class BaseURLObject(text_type):
         Accepts anything you would normally pass to ``dict()``: iterables of
         name/value pairs, keyword arguments and dictionary objects.
 
-        >>> print(URLObject("http://www.google.com?a=b&c=d").set_query_params([('a', 'z'), ('d', 'e')]))
+        >>> print(URLString("http://www.google.com?a=b&c=d").set_query_params([('a', 'z'), ('d', 'e')]))
         http://www.google.com?c=d&a=z&d=e
-        >>> print(URLObject("http://www.google.com?a=b").set_query_params(a="z"))
+        >>> print(URLString("http://www.google.com?a=b").set_query_params(a="z"))
         http://www.google.com?a=z
         """
         return self.with_query(self.query.set_params(*args, **kwargs))
@@ -487,7 +487,7 @@ class BaseURLObject(text_type):
         """
         Remove any and all query parameters with the given name from the URL.
 
-        >>> print(URLObject("http://www.google.com?a=b&c=d&c=e").del_query_param("c"))
+        >>> print(URLString("http://www.google.com?a=b&c=d&c=e").del_query_param("c"))
         http://www.google.com?a=b
         """
         return self.with_query(self.query.del_param(name))
@@ -496,7 +496,7 @@ class BaseURLObject(text_type):
         """
         Remove multiple query params from the URL.
 
-        >>> print(URLObject("http://www.google.com?a=b&c=d&d=e").del_query_params(["c", "d"]))
+        >>> print(URLString("http://www.google.com?a=b&c=d&d=e").del_query_params(["c", "d"]))
         http://www.google.com?a=b
         """
         return self.with_query(self.query.del_params(params))
@@ -506,7 +506,7 @@ class BaseURLObject(text_type):
         """
         This URL's fragment.
 
-        >>> print(URLObject("http://www.google.com/a/b/c#fragment").fragment)
+        >>> print(URLString("http://www.google.com/a/b/c#fragment").fragment)
         fragment
         """
         return path_decode(urlparse.urlsplit(self).fragment)
@@ -515,7 +515,7 @@ class BaseURLObject(text_type):
         """
         Add or replace this URL's :attr:`.fragment`.
 
-        >>> print(URLObject("http://www.google.com/a/b/c#fragment").with_fragment("new_fragment"))
+        >>> print(URLString("http://www.google.com/a/b/c#fragment").with_fragment("new_fragment"))
         http://www.google.com/a/b/c#new_fragment
         """
         return self.__replace(fragment=path_encode(fragment))
@@ -524,7 +524,7 @@ class BaseURLObject(text_type):
         """
         Remove this URL's :attr:`.fragment`.
 
-        >>> print(URLObject("http://www.google.com/a/b/c#fragment").without_fragment())
+        >>> print(URLString("http://www.google.com/a/b/c#fragment").without_fragment())
         http://www.google.com/a/b/c
         """
         return self.__replace(fragment='')
@@ -534,7 +534,7 @@ class BaseURLObject(text_type):
         """
         All domains of this URL.
 
-        >>> print(URLObject("http://www.example.code.google.com").domains)  # doctest: +IGNORE_UNICODE
+        >>> print(URLString("http://www.example.code.google.com").domains)  # doctest: +IGNORE_UNICODE
         ['www', 'example', 'code', 'google', 'com']
         """
         return self.netloc.domains
@@ -544,7 +544,7 @@ class BaseURLObject(text_type):
         """
         This URL's subdomain.
 
-        >>> print(URLObject('http://www.google.com').subdomain)
+        >>> print(URLString('http://www.google.com').subdomain)
         www
         """
         return self.netloc.subdomain
@@ -553,7 +553,7 @@ class BaseURLObject(text_type):
         """
         Add new subdomain.
 
-        >>> print(URLObject('http://google.com').add_subdomain('code'))
+        >>> print(URLString('http://google.com').add_subdomain('code'))
         http://code.google.com
         """
         return self.with_netloc(self.netloc.add_subdomain(subdomain))
@@ -562,7 +562,7 @@ class BaseURLObject(text_type):
         """
         Remove current subdomain.
 
-        >>> print(URLObject('http://code.google.com').remove_subdomain())
+        >>> print(URLString('http://code.google.com').remove_subdomain())
         http://google.com
         """
         return self.with_netloc(self.netloc.remove_subdomain())
@@ -571,10 +571,10 @@ class BaseURLObject(text_type):
         """
         Getting a domain of this URL by domain_level, which by default points to base level domain.
 
-        >>> print(URLObject("http://www.example.code.google.com").get_domain())
+        >>> print(URLString("http://www.example.code.google.com").get_domain())
         google
         >>> from .domain_levels import DOMAIN_LEVEL_TOP
-        >>> print(URLObject("http://www.example.code.google.com").get_domain(DOMAIN_LEVEL_TOP))
+        >>> print(URLString("http://www.example.code.google.com").get_domain(DOMAIN_LEVEL_TOP))
         com
         """
         return self.netloc.get_domain(domain_level=domain_level)
@@ -582,7 +582,7 @@ class BaseURLObject(text_type):
     def with_domain(self, domain, domain_level=DOMAIN_LEVEL_SECOND):
         """
         Add or replace this URL's domain on selected level.
-        >>> print(URLObject('http://google.com').with_domain('example'))
+        >>> print(URLString('http://google.com').with_domain('example'))
         http://example.com
         """
         return self.with_netloc(self.netloc.with_domain(domain, domain_level=domain_level))
@@ -596,7 +596,7 @@ class BaseURLObject(text_type):
         ``<a href="../d/e/f">`` would resolve to
         ``http://www.google.com/a/b/d/e/f`` using this function.
 
-        >>> print(URLObject("http://www.google.com/a/b/c/").relative("../d/e/f"))
+        >>> print(URLString("http://www.google.com/a/b/c/").relative("../d/e/f"))
         http://www.google.com/a/b/d/e/f
         """
         # Relative URL resolution involves cascading through the properties
@@ -624,7 +624,7 @@ class BaseURLObject(text_type):
         return type(self)(urlparse.urlunsplit(urlparse.urlsplit(self)._replace(**replace)))
 
 
-class URLObject(BaseURLObject):
+class URLString(BaseURLObject):
     class URLIsEmpty(ValueError):
         pass
 
@@ -635,10 +635,10 @@ class URLObject(BaseURLObject):
         pass
 
     def __repr__(self):
-        return u('URLObject(%r)') % (text_type(self),)
+        return u('URLString(%r)') % (text_type(self),)
 
     def __new__(cls, *args, **kwargs):
-        obj = super(URLObject, cls).__new__(cls, *args, **kwargs)
+        obj = super(URLString, cls).__new__(cls, *args, **kwargs)
         if not obj:
             raise obj.URLIsEmpty('URL is empty.')
         if not obj.scheme:
