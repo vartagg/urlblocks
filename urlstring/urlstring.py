@@ -529,6 +529,46 @@ class BaseURLString(text_type):
         """
         return self.__replace(fragment='')
 
+    def with_trailing_slash(self):
+        """
+        >>> print(URLString("http://www.google.com").with_trailing_slash())
+        http://www.google.com/
+        >>> print(URLString("http://www.google.com/").with_trailing_slash())
+        http://www.google.com/
+        >>> print(URLString("http://www.google.com/?a=1").with_trailing_slash())
+        http://www.google.com/?a=1
+        >>> print(URLString("http://www.google.com?a=1").with_trailing_slash())
+        http://www.google.com/?a=1
+        >>> print(URLString("http://www.google.com:15?a=1").with_trailing_slash())
+        http://www.google.com:15/?a=1
+        >>> print(URLString("http://www.google.com:15/?a=1").with_trailing_slash())
+        http://www.google.com:15/?a=1
+        """
+        url_without_query = self.without_query()
+        if not url_without_query.endswith('/'):
+            return self.replace(url_without_query, url_without_query + '/', 1)
+        return self
+
+    def without_trailing_slash(self):
+        """
+        >>> print(URLString("http://www.google.com").without_trailing_slash())
+        http://www.google.com
+        >>> print(URLString("http://www.google.com/").without_trailing_slash())
+        http://www.google.com
+        >>> print(URLString("http://www.google.com/?a=1").without_trailing_slash())
+        http://www.google.com?a=1
+        >>> print(URLString("http://www.google.com?a=1").without_trailing_slash())
+        http://www.google.com?a=1
+        >>> print(URLString("http://www.google.com:15?a=1").without_trailing_slash())
+        http://www.google.com:15?a=1
+        >>> print(URLString("http://www.google.com:15/?a=1").without_trailing_slash())
+        http://www.google.com:15?a=1
+        """
+        url_without_query = self.without_query()
+        if url_without_query.endswith('/'):
+            return self.replace(url_without_query, url_without_query[:-1], 1)
+        return self
+
     @property
     def domains(self):
         """
@@ -601,20 +641,20 @@ class BaseURLString(text_type):
         """
         # Relative URL resolution involves cascading through the properties
         # from left to right, replacing
-        other = _RelatedURLString(other)
+        other = _RelativeURLString(other)
         if other.scheme:
-            return other
+            return URLString(other)
         elif other.netloc:
-            return other.with_scheme(self.scheme)
+            return URLString(other.with_scheme(self.scheme))
         elif other.path:
-            return other.with_scheme(self.scheme).with_netloc(self.netloc) \
-                    .with_path(self.path.relative(other.path))
+            return URLString(other.with_scheme(self.scheme).with_netloc(self.netloc) \
+                             .with_path(self.path.relative(other.path)))
         elif other.query:
-            return other.with_scheme(self.scheme).with_netloc(self.netloc) \
-                    .with_path(self.path)
+            return URLString(other.with_scheme(self.scheme).with_netloc(self.netloc) \
+                             .with_path(self.path))
         elif other.fragment:
-            return other.with_scheme(self.scheme).with_netloc(self.netloc) \
-                    .with_path(self.path).with_query(self.query)
+            return URLString(other.with_scheme(self.scheme).with_netloc(self.netloc) \
+                             .with_path(self.path).with_query(self.query))
         # Empty string just removes fragment; it's treated as a path meaning
         # 'the current location'.
         return self.without_fragment()
@@ -624,14 +664,18 @@ class BaseURLString(text_type):
         return type(self)(urlparse.urlunsplit(urlparse.urlsplit(self)._replace(**replace)))
 
 
+class URLError(Exception):
+    pass
+
+
 class URLString(BaseURLString):
-    class URLIsEmpty(ValueError):
+    class IsEmpty(URLError):
         pass
 
-    class SchemeDoesNotExist(ValueError):
+    class SchemeDoesNotExist(URLError):
         pass
 
-    class HostnameDoesNotExist(ValueError):
+    class HostnameDoesNotExist(URLError):
         pass
 
     def __repr__(self):
@@ -640,15 +684,16 @@ class URLString(BaseURLString):
     def __new__(cls, *args, **kwargs):
         obj = super(URLString, cls).__new__(cls, *args, **kwargs)
         if not obj:
-            raise obj.URLIsEmpty('URL is empty.')
+            raise obj.IsEmpty('URL is empty.')
         if not obj.scheme:
-            raise obj.SchemeDoesNotExist('URL must contain a scheme.')
+            raise obj.SchemeDoesNotExist('URL "{0}" not provides a scheme.'.format(args[0]))
         if not obj.hostname or len(obj.domains) < 2:
-            raise obj.HostnameDoesNotExist('URL must contain a hostname, which '
-                                           'encapsulates at least: 1 top-level domain and 1 second-level domain.')
+            raise obj.HostnameDoesNotExist('URL "{0}" not provides a hostname, which '
+                                           'should contain at least 1 top-level domain and 1 second-level domain.'.
+                                           format(args[0]))
         return obj
 
 
-class _RelatedURLString(BaseURLString):
+class _RelativeURLString(BaseURLString):
     def __repr__(self):
-        return u('_RelatedURLString(%r)') % (text_type(self),)
+        return u('_RelativeURLString(%r)') % (text_type(self),)

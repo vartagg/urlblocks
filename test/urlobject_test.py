@@ -371,7 +371,8 @@ class IRITest(unittest.TestCase):
 
 class URLObjectIntegrityCheckingTestCase(unittest.TestCase):
     def test_self_existing_checking(self):
-        self.assertRaises(URLString.URLIsEmpty, lambda: URLString(''))
+        self.assertRaises(URLString.IsEmpty, lambda: URLString(''))
+        self.assertRaises(URLString.IsEmpty, lambda: URLString())
 
     def test_scheme_existing_checking(self):
         self.assertRaises(URLString.SchemeDoesNotExist, lambda: URLString('example.com'))
