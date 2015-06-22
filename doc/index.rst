@@ -16,7 +16,7 @@ documentation <api>`.
 Installation
 ------------
 
-Install using ``pip`` from `pypi <http://pypi.python.org/pypi/URLBlocks>`__.
+Install using ``pip`` from `pypi <http://pypi.python.org/pypi/urlblocks>`__.
 There are no dependencies, and the package is pure Python, tested on CPythons
 v2.6–3.3. (It probably works on v2.5 as well, but Travis CI no longer supports
 testing on v2.5.)
@@ -100,7 +100,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-.. |Build Status| image:: https://secure.travis-ci.org/zacharyvoase/urlobject.png?branch=master
-   :target: http://travis-ci.org/zacharyvoase/urlobject

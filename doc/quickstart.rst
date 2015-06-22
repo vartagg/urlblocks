@@ -7,16 +7,16 @@ Quickstart
 
 ::
 
-    >>> from urlobject import URLBlocks
+    >>> from urlblocks import URLBlocks
 
 Create a URLBlocks with a string representing a URL.
-:class:`~urlobject.URLBlocks` is a regular subclass of ``unicode`` (or ``str``
+:class:`~urlblocks.URLBlocks` is a regular subclass of ``unicode`` (or ``str``
 if you're using Python 3), it just has several properties and methods which
 make it easier to manipulate URLs. All the basic slots from urlsplit are there:
 
-    >>> url = URLBlocks("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
+    >>> url = URLBlocks("https://github.com/zacharyvoase/urlblocks?spam=eggs#foo")
     >>> print(url)
-    https://github.com/zacharyvoase/urlobject?spam=eggs#foo
+    https://github.com/zacharyvoase/urlblocks?spam=eggs#foo
     >>> print(url.scheme)
     https
     >>> print(url.netloc)
@@ -30,49 +30,49 @@ make it easier to manipulate URLs. All the basic slots from urlsplit are there:
     >>> url.default_port
     443
     >>> print(url.path)
-    /zacharyvoase/urlobject
+    /zacharyvoase/urlblocks
     >>> print(url.query)
     spam=eggs
     >>> print(url.fragment)
     foo
 
 You can replace any of these slots using a ``with_*()`` method. Remember that,
-because ``unicode`` (and therefore :class:`~urlobject.URLBlocks`) is immutable,
+because ``unicode`` (and therefore :class:`~urlblocks.URLBlocks`) is immutable,
 these methods all return new URLs:
 
     >>> print(url.with_scheme('http'))
-    http://github.com/zacharyvoase/urlobject?spam=eggs#foo
+    http://github.com/zacharyvoase/urlblocks?spam=eggs#foo
     >>> print(url.with_netloc('example.com'))
-    https://example.com/zacharyvoase/urlobject?spam=eggs#foo
+    https://example.com/zacharyvoase/urlblocks?spam=eggs#foo
     >>> print(url.with_auth('alice', '1234'))
-    https://alice:1234@github.com/zacharyvoase/urlobject?spam=eggs#foo
+    https://alice:1234@github.com/zacharyvoase/urlblocks?spam=eggs#foo
     >>> print(url.with_path('/some_page'))
     https://github.com/some_page?spam=eggs#foo
     >>> print(url.with_query('funtimes=yay'))
-    https://github.com/zacharyvoase/urlobject?funtimes=yay#foo
+    https://github.com/zacharyvoase/urlblocks?funtimes=yay#foo
     >>> print(url.with_fragment('example'))
-    https://github.com/zacharyvoase/urlobject?spam=eggs#example
+    https://github.com/zacharyvoase/urlblocks?spam=eggs#example
 
 For the query and fragment, ``without_`` methods also exist:
 
     >>> print(url.without_query())
-    https://github.com/zacharyvoase/urlobject#foo
+    https://github.com/zacharyvoase/urlblocks#foo
     >>> print(url.without_fragment())
-    https://github.com/zacharyvoase/urlobject?spam=eggs
+    https://github.com/zacharyvoase/urlblocks?spam=eggs
 
 
 Relative URL Resolution
 -----------------------
 
 You can resolve relative URLs against a URLBlocks using
-:meth:`~urlobject.URLBlocks.relative`:
+:meth:`~urlblocks.URLBlocks.relative`:
 
     >>> print(url.relative('another-project'))
     https://github.com/zacharyvoase/another-project
     >>> print(url.relative('?different-query-string'))
-    https://github.com/zacharyvoase/urlobject?different-query-string
+    https://github.com/zacharyvoase/urlblocks?different-query-string
     >>> print(url.relative('#frag'))
-    https://github.com/zacharyvoase/urlobject?spam=eggs#frag
+    https://github.com/zacharyvoase/urlblocks?spam=eggs#frag
 
 Absolute URLs will just be returned as-is:
 
@@ -94,17 +94,17 @@ And you can specify as much or as little of the new URL as you like:
 Path
 ----
 
-The :attr:`~urlobject.URLBlocks.path` property is an instance of ``URLPath``,
+The :attr:`~urlblocks.URLBlocks.path` property is an instance of ``URLPath``,
 which has several methods and properties for manipulating the path string:
 
     >>> print(url.path)
-    /zacharyvoase/urlobject
+    /zacharyvoase/urlblocks
     >>> print(url.path.parent)
     /zacharyvoase/
     >>> print(url.path.segments)
-    ('zacharyvoase', 'urlobject')
+    ('zacharyvoase', 'urlblocks')
     >>> print(url.path.add_segment('subnode'))
-    /zacharyvoase/urlobject/subnode
+    /zacharyvoase/urlblocks/subnode
     >>> print(url.path.root)
     /
 
@@ -113,9 +113,9 @@ Some of these are aliased on the URL itself:
     >>> print(url.parent)
     https://github.com/zacharyvoase/?spam=eggs#foo
     >>> print(url.add_path_segment('subnode'))
-    https://github.com/zacharyvoase/urlobject/subnode?spam=eggs#foo
-    >>> print(url.add_path('tree/urlobject2'))
-    https://github.com/zacharyvoase/urlobject/tree/urlobject2?spam=eggs#foo
+    https://github.com/zacharyvoase/urlblocks/subnode?spam=eggs#foo
+    >>> print(url.add_path('tree/urlblocks2'))
+    https://github.com/zacharyvoase/urlblocks/tree/urlblocks2?spam=eggs#foo
     >>> print(url.root)
     https://github.com/?spam=eggs#foo
 
@@ -123,7 +123,7 @@ Some of these are aliased on the URL itself:
 Query string
 ------------
 
-The :attr:`~urlobject.URLBlocks.query` property is an instance of
+The :attr:`~urlblocks.URLBlocks.query` property is an instance of
 ``QueryString``, so you can access sub-attributes of that with richer
 representations of the query string:
 
@@ -160,19 +160,19 @@ returning a new query string:
     >>> print(url.query.add_params({'foo': 'bar', 'baz': 'blah'}).del_params(['spam', 'foo']))
     baz=blah
 
-Again, some of these methods are aliased on the :class:`~urlobject.URLBlocks`
+Again, some of these methods are aliased on the :class:`~urlblocks.URLBlocks`
 directly:
 
     >>> print(url.add_query_param('spam', 'ham'))
-    https://github.com/zacharyvoase/urlobject?spam=eggs&spam=ham#foo
+    https://github.com/zacharyvoase/urlblocks?spam=eggs&spam=ham#foo
     >>> print(url.set_query_param('spam', 'ham'))
-    https://github.com/zacharyvoase/urlobject?spam=ham#foo
+    https://github.com/zacharyvoase/urlblocks?spam=ham#foo
     >>> print(url.del_query_param('spam'))
-    https://github.com/zacharyvoase/urlobject#foo
+    https://github.com/zacharyvoase/urlblocks#foo
 
 
 Next Steps
 ----------
 
 Check out the :doc:`API documentation <api>` for a detailed description of all
-the properties and methods available on :class:`~urlobject.URLBlocks`.
+the properties and methods available on :class:`~urlblocks.URLBlocks`.

@@ -266,7 +266,7 @@ class BaseURLBlocks(text_type):
         If no port number is explicitly given in the URL, this will return the
         default port number for the scheme if one is known, or ``None``. The
         mapping of schemes to default ports is defined in
-        :const:`urlobject.ports.DEFAULT_PORTS`.
+        :const:`urlblocks.ports.DEFAULT_PORTS`.
 
         For URLs *with* explicit port numbers, this just returns the value of
         :attr:`.port`.
