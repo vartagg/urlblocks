@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# URLString documentation build configuration file, created by
+# URLBlocks documentation build configuration file, created by
 # sphinx-quickstart on Sat Feb 11 19:49:37 2012.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'URLString'
+project = 'URLBlocks'
 copyright = '2012, Zachary Voase'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -183,7 +183,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'URLString.tex', 'URLString Documentation',
+  ('index', 'URLBlocks.tex', 'URLBlocks Documentation',
    'Zachary Voase', 'manual'),
 ]
 
@@ -213,7 +213,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'urlobject', 'URLString Documentation',
+    ('index', 'urlobject', 'URLBlocks Documentation',
      ['Zachary Voase'], 1)
 ]
 
@@ -227,8 +227,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'URLString', 'URLString Documentation',
-   'Zachary Voase', 'URLString', 'One line description of project.',
+  ('index', 'URLBlocks', 'URLBlocks Documentation',
+   'Zachary Voase', 'URLBlocks', 'One line description of project.',
    'Miscellaneous'),
 ]
 

@@ -2,8 +2,8 @@
 
 import unittest
 
-from urlstring.query_string import QueryString
-from urlstring.six import u
+from urlblocks.query_string import QueryString
+from urlblocks.six import u
 
 
 class QueryStringTest(unittest.TestCase):

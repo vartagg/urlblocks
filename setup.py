@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='URLString',
+    name='URLBlocks',
     version='2.4.0',
     description='A utility class for manipulating URLs.',
     author='Zachary Voase',

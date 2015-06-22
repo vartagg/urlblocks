@@ -2,9 +2,9 @@ import unittest
 
 from nose.tools import assert_raises
 
-from urlstring.netloc import Netloc
+from urlblocks.netloc import Netloc
 
-from urlstring import domain_levels
+from urlblocks import domain_levels
 
 
 class NetlocTest(unittest.TestCase):

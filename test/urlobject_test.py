@@ -3,9 +3,9 @@ import doctest
 import unittest
 
 from nose.tools import assert_raises
-from urlstring import urlstring as urlobject_module
-from urlstring import URLString
-from urlstring.six import text_type, u, print_
+from urlblocks import urlblocks as urlobject_module
+from urlblocks import URLBlocks
+from urlblocks.six import text_type, u, print_
 
 
 def dictsort(d):
@@ -20,13 +20,13 @@ class URLObjectTest(unittest.TestCase):
         self.url_string = u("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
 
     def test_urlobject_preserves_equality_with_the_original_string(self):
-        assert URLString(self.url_string) == self.url_string
+        assert URLBlocks(self.url_string) == self.url_string
 
     def test_urlobject_preserves_the_hash_of_the_original_string(self):
-        assert hash(URLString(self.url_string)) == hash(self.url_string)
+        assert hash(URLBlocks(self.url_string)) == hash(self.url_string)
 
     def test_calling_unicode_on_a_urlobject_returns_a_normal_string(self):
-        url = URLString(self.url_string)
+        url = URLBlocks(self.url_string)
         # Normally `type(x) is Y` is a bad idea, but it's exactly what we want.
         assert type(text_type(url)) is text_type
         assert text_type(url) == self.url_string
@@ -49,7 +49,7 @@ class SphinxDoctestsTest(unittest.TestCase):
 class URLObjectRelativeTest(unittest.TestCase):
 
     def setUp(self):
-        self.url = URLString("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
+        self.url = URLBlocks("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
 
     def test_relative_with_scheme_returns_the_given_URL(self):
         assert self.url.relative('http://example.com/abc') == 'http://example.com/abc'
@@ -85,7 +85,7 @@ class URLObjectRelativeTest(unittest.TestCase):
 class URLObjectPropertyTest(unittest.TestCase):
 
     def setUp(self):
-        self.url = URLString("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
+        self.url = URLBlocks("https://github.com/zacharyvoase/urlobject?spam=eggs#foo")
 
     def test_scheme_returns_scheme(self):
         assert self.url.scheme == 'https'
@@ -95,18 +95,18 @@ class URLObjectPropertyTest(unittest.TestCase):
 
     def test_hostname_returns_hostname(self):
         assert self.url.hostname == 'github.com'
-        url = URLString("https://user:pass@github.com:443")
+        url = URLBlocks("https://user:pass@github.com:443")
         assert url.hostname == 'github.com'
 
     def test_port_returns_port_or_None(self):
         assert self.url.port is None
-        assert URLString("https://github.com:412").port == 412
+        assert URLBlocks("https://github.com:412").port == 412
 
     def test_default_port_returns_default_port_when_none_specified(self):
         assert self.url.default_port == 443
 
     def test_default_port_returns_given_port_when_one_is_specified(self):
-        assert URLString("https://github.com:412").default_port == 412
+        assert URLBlocks("https://github.com:412").default_port == 412
 
     def test_path_returns_path(self):
         assert self.url.path == '/zacharyvoase/urlobject'
@@ -121,7 +121,7 @@ class URLObjectPropertyTest(unittest.TestCase):
         assert self.url.query_dict == {'spam': 'eggs'}
 
     def test_query_multi_dict_returns_a_multi_dict_of_query_params(self):
-        url = URLString('https://example.com/?spam=eggs&spam=ham&foo=bar')
+        url = URLBlocks('https://example.com/?spam=eggs&spam=ham&foo=bar')
         assert url.query_multi_dict == {'spam': ['eggs', 'ham'],
                                         'foo': ['bar']}
 
@@ -129,23 +129,23 @@ class URLObjectPropertyTest(unittest.TestCase):
         assert self.url.fragment == 'foo'
 
     def test_fragment_is_decoded_correctly(self):
-        url = URLString('https://example.com/#frag%20ment')
+        url = URLBlocks('https://example.com/#frag%20ment')
         assert url.fragment == 'frag ment'
 
     def test_auth_properties_can_parse_username_and_password(self):
-        url = URLString('https://zack:12345@github.com/')
+        url = URLBlocks('https://zack:12345@github.com/')
         assert url.username == 'zack'
         assert url.password == '12345'
         assert url.auth == ('zack', '12345')
 
     def test_auth_properties_can_parse_username(self):
-        url = URLString('https://zack@github.com/')
+        url = URLBlocks('https://zack@github.com/')
         assert url.username == 'zack'
         assert url.password is None
         assert url.auth == ('zack', None)
 
     def test_auth_properties_return_None_with_no_username_or_password(self):
-        url = URLString('https://github.com/')
+        url = URLBlocks('https://github.com/')
         assert url.username is None
         assert url.password is None
         assert url.auth == (None, None)
@@ -154,7 +154,7 @@ class URLObjectPropertyTest(unittest.TestCase):
 class URLObjectModificationTest(unittest.TestCase):
 
     def setUp(self):
-        self.url = URLString('https://github.com/zacharyvoase/urlobject?spam=eggs#foo')
+        self.url = URLBlocks('https://github.com/zacharyvoase/urlobject?spam=eggs#foo')
 
     def test_with_scheme_replaces_scheme(self):
         assert (self.url.with_scheme('http') ==
@@ -165,68 +165,68 @@ class URLObjectModificationTest(unittest.TestCase):
                 'https://example.com/zacharyvoase/urlobject?spam=eggs#foo')
 
     def test_with_hostname_replaces_hostname(self):
-        url = URLString('https://user:pass@github.com/')
+        url = URLBlocks('https://user:pass@github.com/')
         assert (url.with_hostname('example.com') ==
                 'https://user:pass@example.com/')
 
     def test_with_username_adds_username(self):
-        url = URLString('https://github.com/')
+        url = URLBlocks('https://github.com/')
         assert url.with_username('zack') == 'https://zack@github.com/'
 
     def test_with_username_replaces_username(self):
-        url = URLString('https://zack@github.com/')
+        url = URLBlocks('https://zack@github.com/')
         assert url.with_username('alice') == 'https://alice@github.com/'
 
     def test_without_username_removes_username(self):
-        url = URLString('https://zack@github.com/')
+        url = URLBlocks('https://zack@github.com/')
         assert url.without_username() == 'https://github.com/'
 
     def test_with_password_adds_password(self):
-        url = URLString('https://zack@github.com/')
+        url = URLBlocks('https://zack@github.com/')
         assert url.with_password('1234') == 'https://zack:1234@github.com/'
 
     def test_with_password_raises_ValueError_when_there_is_no_username(self):
-        url = URLString('https://github.com/')
+        url = URLBlocks('https://github.com/')
         assert_raises(ValueError, lambda: url.with_password('1234'))
 
     def test_with_password_replaces_password(self):
-        url = URLString('https://zack:1234@github.com/')
+        url = URLBlocks('https://zack:1234@github.com/')
         assert url.with_password('5678') == 'https://zack:5678@github.com/'
 
     def test_without_password_removes_password(self):
-        url = URLString('https://zack:1234@github.com/')
+        url = URLBlocks('https://zack:1234@github.com/')
         assert url.without_password() == 'https://zack@github.com/'
 
     def test_with_auth_with_one_arg_adds_username(self):
-        url = URLString('https://github.com/')
+        url = URLBlocks('https://github.com/')
         assert url.with_auth('zack') == 'https://zack@github.com/'
 
     def test_with_auth_with_one_arg_replaces_whole_auth_string_with_username(self):
-        url = URLString('https://alice:1234@github.com/')
+        url = URLBlocks('https://alice:1234@github.com/')
         assert url.with_auth('zack') == 'https://zack@github.com/'
 
     def test_with_auth_with_two_args_adds_username_and_password(self):
-        url = URLString('https://github.com/')
+        url = URLBlocks('https://github.com/')
         assert url.with_auth('zack', '1234') == 'https://zack:1234@github.com/'
 
     def test_with_auth_with_two_args_replaces_whole_auth_string_with_username_and_password(self):
         # Replaces username-only auth string
-        url = URLString('https://alice@github.com/')
+        url = URLBlocks('https://alice@github.com/')
         assert url.with_auth('zack', '1234') == 'https://zack:1234@github.com/'
 
         # Replaces username and password.
-        url = URLString('https://alice:4567@github.com/')
+        url = URLBlocks('https://alice:4567@github.com/')
         assert url.with_auth('zack', '1234') == 'https://zack:1234@github.com/'
 
     def test_without_auth_removes_entire_auth_string(self):
         # No username or password => no-op.
-        url = URLString('https://github.com/')
+        url = URLBlocks('https://github.com/')
         assert url.without_auth() == 'https://github.com/'
         # Username-only.
-        url = URLString('https://alice@github.com/')
+        url = URLBlocks('https://alice@github.com/')
         assert url.without_auth() == 'https://github.com/'
         # Username and password.
-        url = URLString('https://alice:1234@github.com/')
+        url = URLBlocks('https://alice:1234@github.com/')
         assert url.without_auth() == 'https://github.com/'
 
     def test_with_port_adds_port_number(self):
@@ -234,11 +234,11 @@ class URLObjectModificationTest(unittest.TestCase):
                 'https://github.com:24/zacharyvoase/urlobject?spam=eggs#foo')
 
     def test_with_port_replaces_port_number(self):
-        url = URLString('https://github.com:59/')
+        url = URLBlocks('https://github.com:59/')
         assert url.with_port(67) == 'https://github.com:67/'
 
     def test_without_port_removes_port_number(self):
-        url = URLString('https://github.com:59/')
+        url = URLBlocks('https://github.com:59/')
         assert url.without_port() == 'https://github.com/'
 
     def test_with_path_replaces_path(self):
@@ -249,27 +249,27 @@ class URLObjectModificationTest(unittest.TestCase):
         assert self.url.root == 'https://github.com/?spam=eggs#foo'
 
     def test_parent_jumps_up_one_level(self):
-        url = URLString('https://github.com/zacharyvoase/urlobject')
+        url = URLBlocks('https://github.com/zacharyvoase/urlobject')
         assert url.parent == 'https://github.com/zacharyvoase/'
         assert url.parent.parent == 'https://github.com/'
 
     def test_add_path_segment_adds_a_path_segment(self):
-        url = URLString('https://github.com/zacharyvoase/urlobject')
+        url = URLBlocks('https://github.com/zacharyvoase/urlobject')
         assert (url.add_path_segment('tree') ==
                 'https://github.com/zacharyvoase/urlobject/tree')
         assert (url.add_path_segment('tree/master') ==
                 'https://github.com/zacharyvoase/urlobject/tree%2Fmaster')
 
     def test_add_path_adds_a_partial_path(self):
-        url = URLString('https://github.com/zacharyvoase/urlobject')
+        url = URLBlocks('https://github.com/zacharyvoase/urlobject')
         assert (url.add_path('tree') ==
                 'https://github.com/zacharyvoase/urlobject/tree')
         assert (url.add_path('tree/master') ==
                 'https://github.com/zacharyvoase/urlobject/tree/master')
 
     def test_is_leaf(self):
-        assert URLString('https://github.com/zacharyvoase/urlobject').is_leaf
-        assert not URLString('https://github.com/zacharyvoase/').is_leaf
+        assert URLBlocks('https://github.com/zacharyvoase/urlobject').is_leaf
+        assert not URLBlocks('https://github.com/zacharyvoase/').is_leaf
 
     def test_with_query_replaces_query(self):
         assert (self.url.with_query('spam-ham-eggs') ==
@@ -306,7 +306,7 @@ class URLObjectModificationTest(unittest.TestCase):
                 'https://github.com/zacharyvoase/urlobject?spam=eggs&foo=bar&foo=baz#foo')
         # Ensure it removes all appearances of an existing name before adding
         # the new ones.
-        url = URLString('https://github.com/zacharyvoase/urlobject?foo=bar&foo=baz#foo')
+        url = URLBlocks('https://github.com/zacharyvoase/urlobject?foo=bar&foo=baz#foo')
         assert (url.set_query_params({'foo': ['spam', 'ham']}) ==
                 'https://github.com/zacharyvoase/urlobject?foo=spam&foo=ham#foo')
 
@@ -315,7 +315,7 @@ class URLObjectModificationTest(unittest.TestCase):
                 'https://github.com/zacharyvoase/urlobject#foo')
 
     def test_del_query_params_removes_multiple_query_parameters(self):
-        url = URLString('https://github.com/zacharyvoase/urlobject?foo=bar&baz=spam#foo')
+        url = URLBlocks('https://github.com/zacharyvoase/urlobject?foo=bar&baz=spam#foo')
         assert (url.del_query_params(['foo', 'baz']) ==
                 'https://github.com/zacharyvoase/urlobject#foo')
 
@@ -334,51 +334,51 @@ class URLObjectModificationTest(unittest.TestCase):
 
 class IRITest(unittest.TestCase):
     def test_encode_hostname_idna(self):
-        assert (URLString.from_iri(u('https://\xe9xample.com/')) ==
+        assert (URLBlocks.from_iri(u('https://\xe9xample.com/')) ==
                 'https://xn--xample-9ua.com/')
 
     def test_port_maintained(self):
-        assert (URLString.from_iri(u('https://\xe9xample.com:80/')) ==
+        assert (URLBlocks.from_iri(u('https://\xe9xample.com:80/')) ==
                 'https://xn--xample-9ua.com:80/')
 
     def test_encode_path(self):
-        assert (URLString.from_iri(u('https://example.com/p\xe5th/path2')) ==
+        assert (URLBlocks.from_iri(u('https://example.com/p\xe5th/path2')) ==
                 'https://example.com/p%C3%A5th/path2')
 
     def test_encode_query(self):
-        assert (URLString.from_iri(u('https://example.com/?k\xe9y=v\xe5l&key2=val2')) ==
+        assert (URLBlocks.from_iri(u('https://example.com/?k\xe9y=v\xe5l&key2=val2')) ==
                 'https://example.com/?k%C3%A9y=v%C3%A5l&key2=val2')
 
     def test_encode_fragment(self):
-        assert (URLString.from_iri(u('https://example.com/#fr\xe5gment')) ==
+        assert (URLBlocks.from_iri(u('https://example.com/#fr\xe5gment')) ==
                 'https://example.com/#fr%C3%A5gment')
 
     def test_path_params(self):
-        assert (URLString.from_iri(u('https://example.com/foo;p\xe5rameter')) ==
+        assert (URLBlocks.from_iri(u('https://example.com/foo;p\xe5rameter')) ==
                 'https://example.com/foo;p%C3%A5rameter')
 
     def test_quoted_iri(self):
         """
         If an IRI already has some quoted characters, they will be maintained as is.
         """
-        assert (URLString.from_iri(u('https://example.com/foo%20b\xe5r/')) ==
+        assert (URLBlocks.from_iri(u('https://example.com/foo%20b\xe5r/')) ==
                 'https://example.com/foo%20b%C3%A5r/')
 
     def test_quote_other_special_characters(self):
-        assert (URLString.from_iri(u('https://example.com/foo bar/')) ==
+        assert (URLBlocks.from_iri(u('https://example.com/foo bar/')) ==
                 'https://example.com/foo%20bar/')
 
 
 class URLObjectIntegrityCheckingTestCase(unittest.TestCase):
     def test_self_existing_checking(self):
-        self.assertRaises(URLString.IsEmpty, lambda: URLString(''))
-        self.assertRaises(URLString.IsEmpty, lambda: URLString())
+        self.assertRaises(URLBlocks.IsEmpty, lambda: URLBlocks(''))
+        self.assertRaises(URLBlocks.IsEmpty, lambda: URLBlocks())
 
     def test_scheme_existing_checking(self):
-        self.assertRaises(URLString.SchemeDoesNotExist, lambda: URLString('example.com'))
-        self.assertRaises(URLString.SchemeDoesNotExist, lambda: URLString('//example.com'))
+        self.assertRaises(URLBlocks.SchemeDoesNotExist, lambda: URLBlocks('example.com'))
+        self.assertRaises(URLBlocks.SchemeDoesNotExist, lambda: URLBlocks('//example.com'))
 
     def test_hostname_existing_checking(self):
-        self.assertRaises(URLString.HostnameDoesNotExist, lambda: URLString('http://'))
-        self.assertRaises(URLString.HostnameDoesNotExist, lambda: URLString('http://.com'))
-        self.assertRaises(URLString.HostnameDoesNotExist, lambda: URLString('http://com'))
+        self.assertRaises(URLBlocks.HostnameDoesNotExist, lambda: URLBlocks('http://'))
+        self.assertRaises(URLBlocks.HostnameDoesNotExist, lambda: URLBlocks('http://.com'))
+        self.assertRaises(URLBlocks.HostnameDoesNotExist, lambda: URLBlocks('http://com'))

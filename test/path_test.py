@@ -2,8 +2,8 @@
 
 import unittest
 
-from urlstring.path import URLPath
-from urlstring.six import u
+from urlblocks.path import URLPath
+from urlblocks.six import u
 
 
 class URLPathTest(unittest.TestCase):

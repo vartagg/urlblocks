@@ -1,8 +1,8 @@
-# URLString 2
+# URLBlocks 2
 
 [![Build Status](https://secure.travis-ci.org/zacharyvoase/urlobject.png?branch=master)](http://travis-ci.org/zacharyvoase/urlobject)
 
-`URLString` is a utility class for manipulating URLs. The latest incarnation of
+`URLBlocks` is a utility class for manipulating URLs. The latest incarnation of
 this library builds upon the ideas of its predecessor, but aims for a clearer
 API, focusing on proper method names over operator overrides. It's also being
 developed from the ground up in a test-driven manner, and has full Sphinx
@@ -10,10 +10,10 @@ documentation.
 
 ## Installation
 
-URLString is hosted on [PyPI](http://pypi.python.org/pypi/URLString). Install
+URLBlocks is hosted on [PyPI](http://pypi.python.org/pypi/URLBlocks). Install
 it using `pip`:
 
-    pip install URLString
+    pip install URLBlocks
 
 
 ## Quickstart
